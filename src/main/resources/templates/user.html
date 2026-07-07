@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
-    <title>Spring Security Example</title>
+    <title>User controller</title>
 </head>
 <body>
 
@@ -11,16 +11,10 @@
         <th>Name</th>
         <th>Email</th>
         <th>Age</th>
-        <th>Update</th>
     </tr>
         <td th:text="${user.name}"></td>
         <td th:text="${user.email}"></td>
         <td th:text="${user.age}"></td>
-        <td>
-            <a th:href="@{/user-update/{id}(id=${user.id})}">
-                <button type="button">Update</button>
-            </a>
-        </td>
     </tr>
 </table>
 

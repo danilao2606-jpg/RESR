@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User.info.0=)</title>
+    <title>User.update.0=)</title>
 </head>
 <body>
 <h2>Edit user</h2>
-<form method="post" th:action="@{/admin-update/{id}(id=${user.id})}" th:object="${user}">
+<form method="post" th:action="@{/admin/admin-update/{id}(id=${user.id})}" th:object="${user}">
 
     <label for="name">Name:</label>
     <input type="text" th:field="*{name}" id="name"/>
@@ -33,8 +33,22 @@
     <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</div>
     <br/>
 
+    <div class="form-group">
+        <label>Roles:</label>
+        <div th:each="role : ${allRoles}" class="form-check form-check-inline">
+            <input type="checkbox"
+                   class="form-check-input"
+                   th:field="*{roles}"
+                   th:value="${role.id}"
+                   th:id="'role_' + ${role.id}"/>
+            <label class="form-check-label"
+                   th:for="'role_' + ${role.id}"
+                   th:text="${role.name}"></label>
+        </div>
+    </div>
+
     <button type="submit">Update</button>
 </form>
-<a href="/user">Cancel</a>
+<a href="/admin">Cancel</a>
 </body>
 </html>

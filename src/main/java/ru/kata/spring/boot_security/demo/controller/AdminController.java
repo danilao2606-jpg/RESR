@@ -2,62 +2,61 @@ package ru.kata.spring.boot_security.demo.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.AdminService;
+import ru.kata.spring.boot_security.demo.repository.RoleRepository;
+import ru.kata.spring.boot_security.demo.service.UserServiceImp;
 
-import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 @Controller
+@RequestMapping("/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
-    private final AdminService adminService;
+    private final UserServiceImp userServiceImp;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
+    public AdminController(UserServiceImp userServiceImp, RoleRepository roleRepository) {
+        this.userServiceImp = userServiceImp;
+        this.roleRepository = roleRepository;
     }
 
-    @PostConstruct
-    public void init() {
-        System.out.println("Перейдите по ссылке : http://localhost:8080/login");
-    }
 
-    @GetMapping("/admin")  //Отображение данных
+    @GetMapping
     public String getAdmin(Model model) {
-        model.addAttribute("userList", adminService.findAll());
+        model.addAttribute("userList", userServiceImp.findAll());
         model.addAttribute("user", new User());
+        model.addAttribute("allRoles", roleRepository.findAll());
         return "admin";
     }
 
-    @PostMapping("/admin/add") //Сохранение нового клиента
+    @PostMapping("/add")
     public String createUser(@Valid @ModelAttribute User user,
                              BindingResult bindingResult,
                              Model model) {
         if (bindingResult.hasErrors()) {
-            System.out.println("=== КОНТРОЛЛЕР: login = " + user.getLogin());
-            model.addAttribute("userList", adminService.findAll());
+            model.addAttribute("userList", userServiceImp.findAll());
             return "admin";
         }
-        adminService.save(user);
+        userServiceImp.save(user);
         return "redirect:/admin";
     }
 
-    @PostMapping("admin/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") Long id) {
-        adminService.deleteById(id);
+        userServiceImp.deleteById(id);
         return "redirect:/admin";
     }
 
     @GetMapping("/admin-update/{id}")  //Редактирование человека
     public String updateUserGet(@PathVariable long id, Model model) {
-        model.addAttribute("user", adminService.findById(id));
+        model.addAttribute("user", userServiceImp.findById(id));
+        model.addAttribute("allRoles", roleRepository.findAll());
         return "admin-update";
     }
 
@@ -69,8 +68,7 @@ public class AdminController {
             return "admin-update";
         }
         user.setId(id);
-        adminService.update(user);
-        System.out.println("=== РЕДИРЕКТ НА /admin ===");
+        userServiceImp.update(user);
         return "redirect:/admin";
     }
 }

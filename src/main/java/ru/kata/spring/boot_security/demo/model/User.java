@@ -21,7 +21,7 @@ public class User implements UserDetails {
     @NotEmpty(message = "Имя пожалуйста)")
     @Pattern(regexp = "^[a-zA-Zа-яА-Я]+$", message = "Ты вводишь свой ник? А нужно имя)")
     @Size(min = 2, max = 30, message = "Странное имя, нужно от 2 до 30 букв в имени")
-    @Column (name = "name")
+    @Column (name = "name", unique = true)
     private String name;                                           //Имя
 
     @NotEmpty(message = "Почту пожалуйста =)")
@@ -37,13 +37,13 @@ public class User implements UserDetails {
     @Column (name = "login", unique = true)
     private String login;                                          //Логин
 
-    @Column (name = "password")
+    @Column (name = "password", unique = true)
     private String password;                                       //Пароль
 
     @Transient
     private String passwordConfirm;                               //Проверка пароля
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -66,7 +66,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name;
+        return login;
     }
 
     @Override

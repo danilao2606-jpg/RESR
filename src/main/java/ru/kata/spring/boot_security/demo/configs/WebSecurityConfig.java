@@ -46,37 +46,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .logout()
-                .permitAll();
-        http
-                .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
                 .deleteCookies("JSESSIONID")
                 .invalidateHttpSession(true)
                 .permitAll();
     }
-
-    // аутентификация inMemory
-    @Bean
-    @Override
-    public UserDetailsService userDetailsService() {
-        UserDetails user =
-                User.builder()
-                        .username("user")
-                        .password("{bcrypt}$2a$12$rRWkz7qVPdyna5AgC3IH6elcOOpz.p1PLNcg/SZ0pufZE08MuG7ne")        //пароль - user
-                        //.password("User")
-                        .roles("USER")
-                        .build();
-        UserDetails admin =
-                User.builder()
-                        .username("admin")
-                        .password("{bcrypt}$2a$12$vDru3dUVPQOAMkyBE5er..dairXaBpGn26UAoR8fZs3kMdltp5ImC")        //пароль - admin
-                        //.password("admin")
-                        .roles("ADMIN", "USER")
-                        .build();
-
-        return new InMemoryUserDetailsManager(user, admin);
-    }
-
 
 }
