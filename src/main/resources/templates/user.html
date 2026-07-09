@@ -1,40 +1,68 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="ru">
+
 <head>
     <meta charset="UTF-8">
-    <title>User controller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
+<header class="container-fluid bg-dark text-white">
+    <div class="d-flex justify-content-between align-items-center py-2">
+        <div>
+            <strong id="userEmail"></strong>
+            <span>with roles:</span>
+            <span id="userRole"></span>
+        </div>
+        <a href="/logout" class="nav-link text-white-50">
+            Logout
+        </a>
+    </div>
+</header>
+<main class="container-fluid">
+    <div class="row">
+        <aside class="col-2 bg-white min-vh-100 p-0">
+            <div class="list-group rounded-0">
+                <div class="list-group-item active border-0">
+                    User
+                </div>
+            </div>
+        </aside>
+        <div class="col-10 bg-light">
+            <div class="pt-4">
+                <h2 class="mb-4">
+                    User information
+                </h2>
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            About user
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Age</th>
+                                <th>Role</th>
+                            </tr>
+                            </thead>
+                            <tbody id="userInfo">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 
-<table border="1">
-    <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Age</th>
-    </tr>
-        <td th:text="${user.name}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.age}"></td>
-    </tr>
-</table>
-
-<table border="1">
-    <thead>
-    <tr>
-        <th>Exit</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>
-            <form th:action="@{/logout}" method="post">
-                <button type="submit">Exit</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
+<script src="/user.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
