@@ -149,10 +149,17 @@
                                                     </button>
                                                 </td>
                                                 <td>
-                                                    <a class="btn btn-danger"
-                                                       th:href="@{/admin/admin-delete/{id}(id=${user.id})}">
+                                                    <button type="button"
+                                                            class="btn btn-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal"
+                                                            th:data-id="${user.id}"
+                                                            th:data-name="${user.name}"
+                                                            th:data-email="${user.email}"
+                                                            th:data-age="${user.age}"
+                                                            th:data-login="${user.login}">
                                                         Delete
-                                                    </a>
+                                                    </button>
                                                 </td>
                                             </tr>
                                             </tbody>
@@ -246,57 +253,36 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <!-- USER PANEL -->
-                            <div class="tab-pane fade" id="userPanel">
-                                <div class="pt-3">
-                                    <h2 class="mb-4">
-                                        User information page
-                                    </h2>
-                                    <div class="card shadow-sm border-0">
-                                        <div class="card-header">
-                                            <h5 class="mb-0">
-                                                About user
-                                            </h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <table class="table table-striped align-middle">
-                                                <thead class="table-light">
-                                                <tr>
-                                                    <th>Name</th>
-                                                    <th>Age</th>
-                                                    <th>Email</th>
-                                                    <th>Role</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td th:text="${user.name}">
-                                                        Name
-                                                    </td>
-                                                    <td th:text="${user.age}">
-                                                        Age
-                                                    </td>
-                                                    <td th:text="${user.email}">
-                                                        Email
-                                                    </td>
-                                                    <td>
-                                                        <span th:each="role : ${user.roles}"
-                                                            th:text="${role.name + ' '}">
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- USER PANEL -->
+                <div class="tab-pane fade" id="userPanel">
+                    <div class="container-fluid px-4 py-3">
+                        <h1>User information-page</h1>
+                        <div class="card">
+                            <div class="card-header py-3">
+                                <div class="h4 m-0">About user</div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-striped border-top">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Age</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Role</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="adminInfo"></tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+    </section>
     </div>
 </main>
 
@@ -315,6 +301,12 @@
             </div>
             <div class="modal-body">
                 <form id="editForm" method="post">
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <input type="hidden"
+                           id="editId"
+                           name="id">
                     <div class="mb-3">
                         <label class="form-label">
                             Name
@@ -380,6 +372,81 @@
                         Save changes
                     </button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete user</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <form id="deleteUserForm" method="post">
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <!-- ID (hidden) -->
+                    <input type="hidden" id="deleteUserId" name="id">
+
+                    <!-- Name -->
+                    <div class="mb-3 row">
+                        <div class="col-lg-7 mx-auto d-flex flex-column align-items-center">
+                            <label for="deleteName" class="form-label fw-bold">Name</label>
+                            <input type="text" class="form-control bg-light" id="deleteName" name="name" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3 row">
+                        <div class="col-lg-7 mx-auto d-flex flex-column align-items-center">
+                            <label for="deleteEmail" class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control bg-light" id="deleteEmail" name="email" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Age -->
+                    <div class="mb-3 row">
+                        <div class="col-lg-7 mx-auto d-flex flex-column align-items-center">
+                            <label for="deleteAge" class="form-label fw-bold">Age</label>
+                            <input type="number" class="form-control bg-light" id="deleteAge" name="age" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Login -->
+                    <div class="mb-3 row">
+                        <div class="col-lg-7 mx-auto d-flex flex-column align-items-center">
+                            <label for="deleteLogin" class="form-label fw-bold">Login</label>
+                            <input type="text" class="form-control bg-light" id="deleteLogin" name="login" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Roles -->
+                    <div class="mb-3 row">
+                        <div class="col-lg-7 mx-auto d-flex flex-column align-items-center">
+                            <label for="deleteRoles" class="form-label fw-bold">Role</label>
+                            <select id="deleteRoles" class="form-select bg-light" size="2" name="roles"
+                                    style="width: 100%;" disabled>
+                                <option value="1">USER</option>
+                                <option value="2">ADMIN</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="deleteUserForm" class="btn btn-primary">Delete</button>
             </div>
         </div>
     </div>

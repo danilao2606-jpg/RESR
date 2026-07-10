@@ -13,6 +13,8 @@ import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.UserServiceImp;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -49,6 +51,24 @@ public class AdminController {
         }
         userServiceImp.save(user);
         return "redirect:/admin";
+    }
+
+    @GetMapping("/api/user")
+    @ResponseBody
+    public Map<String, Object> getCurrentUser(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("id", user.getId());
+        result.put("name", user.getName());
+        result.put("age", user.getAge());
+        result.put("email", user.getEmail());
+        result.put("roles",
+                user.getRoles()
+                        .stream()
+                        .map(role -> role.getName())
+                        .toList());
+        return result;
     }
 
     @PostMapping("/delete/{id}")
