@@ -12,23 +12,30 @@
 <body class="bg-light">
 <header class="container-fluid bg-dark text-white">
     <div class="row align-items-center py-2">
+
         <div class="col">
             <strong th:text="${admin.email}">
                 admin@mail.com
             </strong>
+
             <span>
                 with roles:
             </span>
+
             <span th:each="role : ${admin.roles}"
                   th:text="${role.name + ' '}">
-</span>
+            </span>
         </div>
+
         <div class="col-auto">
-            <a href="/logout"
-               class="nav-link text-white-50">
-                Logout
-            </a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit"
+                        class="btn btn-link nav-link text-white-50">
+                    Logout
+                </button>
+            </form>
         </div>
+
     </div>
 </header>
 <main class="container-fluid">

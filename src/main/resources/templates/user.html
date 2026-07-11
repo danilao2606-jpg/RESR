@@ -22,9 +22,12 @@
                   th:text="${role.name + ' '}">
             </span>
         </div>
-        <a href="/logout" class="nav-link text-white-50">
-            Logout
-        </a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit"
+                    class="btn btn-link nav-link text-white-50 p-0">
+                Logout
+            </button>
+        </form>
     </div>
 </header>
 <main class="container-fluid">
