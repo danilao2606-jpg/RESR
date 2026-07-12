@@ -4,14 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -29,7 +26,7 @@ public class UserServiceImp implements UserService {
     @Override
     public void save(User user) {
         if (user == null) {
-            throw new NullPointerException("Exception: человек для сохранения не найден!");
+            throw new IllegalArgumentException("User is null");
         }
         user.setPassword(
                 bCryptPasswordEncoder.encode(user.getPassword())
@@ -56,10 +53,7 @@ public class UserServiceImp implements UserService {
     @Override
     @Transactional
     public void update(User user) {
-        User oldUser = userRepository.findById(user.getId())
-                .orElseThrow(() ->
-                        new RuntimeException("Человек не найден")
-                );
+        User oldUser = findById(user.getId());
         oldUser.setName(user.getName());
         oldUser.setAge(user.getAge());
         oldUser.setEmail(user.getEmail());
@@ -79,8 +73,6 @@ public class UserServiceImp implements UserService {
     @Transactional
     @Override
     public void deleteById(long id) {
-        if (userRepository.findById(id).isPresent()) {
-            userRepository.deleteById(id);
-        }
+        userRepository.deleteById(id);
     }
 }

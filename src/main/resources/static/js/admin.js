@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("saveEditBtn")
         );
 
-        fetch("/admin/api/user")
+        fetch("/api/user")
             .then(response => response.json())
             .then(user => {
 
