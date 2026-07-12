@@ -145,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 password: document.getElementById("addPassword").value,
                 roles: roles
             };
+
             console.log("Создаём пользователя:", user);
             fetch("/api/users", {
                 method: "POST",
