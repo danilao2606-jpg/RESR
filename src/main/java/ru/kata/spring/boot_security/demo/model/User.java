@@ -1,11 +1,13 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class User implements UserDetails {
     @Column (name = "login", unique = true)
     private String login;                                          //Логин
 
+    @JsonIgnore
     @Column (name = "password", unique = true)
     private String password;                                       //Пароль
 
@@ -49,7 +52,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )                                                             //Роль
-    private List<Role> roles;
+    private List<Role> roles = new ArrayList<>();;
 
     public User() {
     }

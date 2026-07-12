@@ -8,6 +8,7 @@ import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +30,14 @@ public class UserServiceImp implements UserService {
     public void save(User user) {
         if (user == null) {
             throw new NullPointerException("Exception: человек для сохранения не найден!");
-        } else {
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            userRepository.save(user);
         }
+        user.setPassword(
+                bCryptPasswordEncoder.encode(user.getPassword())
+        );
+        if (user.getRoles() == null) {
+            user.setRoles(new ArrayList<>());
+        }
+        userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
@@ -48,15 +53,27 @@ public class UserServiceImp implements UserService {
         return userRepository.findAllWithRoles();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void update(User user) {
-        if (user == null) {
-            throw new NullPointerException("Exception: человек для изменения не найден!");
+        User oldUser = userRepository.findById(user.getId())
+                .orElseThrow(() ->
+                        new RuntimeException("Человек не найден")
+                );
+        oldUser.setName(user.getName());
+        oldUser.setAge(user.getAge());
+        oldUser.setEmail(user.getEmail());
+        oldUser.setLogin(user.getLogin());
+        oldUser.setRoles(user.getRoles());
+        if (user.getPassword() != null &&
+                !user.getPassword().startsWith("$2a$")) {
+            oldUser.setPassword(
+                    bCryptPasswordEncoder.encode(user.getPassword())
+            );
         } else {
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            userRepository.save(user);
+            oldUser.setPassword(user.getPassword());
         }
+        userRepository.save(oldUser);
     }
 
     @Transactional

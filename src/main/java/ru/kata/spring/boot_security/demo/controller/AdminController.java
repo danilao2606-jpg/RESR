@@ -10,7 +10,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.RoleRepository;
-import ru.kata.spring.boot_security.demo.service.UserServiceImp;
+import ru.kata.spring.boot_security.demo.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -20,11 +24,11 @@ import java.util.Map;
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
-    private final UserServiceImp userServiceImp;
+    private final UserService userServiceImp;
     private final RoleRepository roleRepository;
 
     @Autowired
-    public AdminController(UserServiceImp userServiceImp, RoleRepository roleRepository) {
+    public AdminController(UserService userServiceImp, RoleRepository roleRepository) {
         this.userServiceImp = userServiceImp;
         this.roleRepository = roleRepository;
     }
@@ -45,6 +49,7 @@ public class AdminController {
     public String createUser(@Valid @ModelAttribute User user,
                              BindingResult bindingResult,
                              Model model) {
+        System.out.println(user.getRoles());
         if (bindingResult.hasErrors()) {
             model.addAttribute("userList", userServiceImp.findAll());
             return "admin";
@@ -69,12 +74,6 @@ public class AdminController {
                         .map(role -> role.getName())
                         .toList());
         return result;
-    }
-
-    @PostMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
-        userServiceImp.deleteById(id);
-        return "redirect:/admin";
     }
 
     @GetMapping("/admin-update/{id}")  //Редактирование человека
