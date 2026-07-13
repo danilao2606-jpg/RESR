@@ -1,7 +1,11 @@
 package ru.kata.spring.boot_security.demo.DTO;
 
+import lombok.Data;
+import ru.kata.spring.boot_security.demo.model.Role;
+
 import java.util.List;
 
+@Data
 public class UserResponseDTO {
 
     private Long id;
@@ -27,28 +31,6 @@ public class UserResponseDTO {
         this.roles = roles;
     }
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public List<String> getRoles() {
-        return roles;
+    public void setRoles(List<Role> roles) {
     }
 }

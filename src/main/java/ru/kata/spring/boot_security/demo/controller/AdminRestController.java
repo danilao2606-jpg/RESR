@@ -1,10 +1,12 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 
+import org.mapstruct.control.MappingControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.DTO.UserResponseDTO;
+import ru.kata.spring.boot_security.demo.mapper.UserMapper;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -21,26 +23,14 @@ public class AdminRestController {
 
     private final UserService userService;
     private final RoleRepository roleRepository;
+    private final UserMapper userMapper;
 
     @Autowired
-    public AdminRestController(UserService userService, RoleRepository roleRepository) {
+    public AdminRestController(UserService userService, RoleRepository roleRepository, UserMapper userMapper) {
 
         this.userService = userService;
         this.roleRepository = roleRepository;
-    }
-
-    private UserResponseDTO mapToDto(User user) {
-        return new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getAge(),
-                user.getLogin(),
-                user.getRoles()
-                        .stream()
-                        .map(Role::getName)
-                        .toList()
-        );
+        this.userMapper = userMapper;
     }
 
     @GetMapping
@@ -48,7 +38,7 @@ public class AdminRestController {
 
         return userService.findAll()
                 .stream()
-                .map(this::mapToDto)
+                .map(userMapper::toResponseDTO)
                 .toList();
     }
 
@@ -56,12 +46,7 @@ public class AdminRestController {
     public ResponseEntity<UserResponseDTO> createUser(
             @RequestBody UserRequestDTO userRequestDTO) {
 
-        User user = new User();
-        user.setName(userRequestDTO.getName());
-        user.setAge(userRequestDTO.getAge());
-        user.setEmail(userRequestDTO.getEmail());
-        user.setLogin(userRequestDTO.getLogin());
-        user.setPassword(userRequestDTO.getPassword());
+        User user =  userMapper.toEntity(userRequestDTO);
         List<Role> roles = userRequestDTO.getRoles()
                 .stream()
                 .map(roleId -> roleRepository.findById(roleId)
@@ -70,7 +55,7 @@ public class AdminRestController {
                 .collect(Collectors.toList());
         user.setRoles(roles);
         userService.save(user);
-        return ResponseEntity.ok(mapToDto(user));
+        return ResponseEntity.ok(userMapper.toResponseDTO(user));
     }
 
     @GetMapping("/{id}")
@@ -78,7 +63,7 @@ public class AdminRestController {
             @PathVariable Long id) {
 
         User user = userService.findById(id);
-        return ResponseEntity.ok(mapToDto(user));
+        return ResponseEntity.ok(userMapper.toResponseDTO(user));
     }
 
     @DeleteMapping("/{id}")
@@ -90,13 +75,10 @@ public class AdminRestController {
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable Long id,
-            @RequestBody UserRequestDTO userRequestDTO) {
+            @RequestBody UserRequestDTO dto) {
         User user = userService.findById(id);
-        user.setName(userRequestDTO.getName());
-        user.setAge(userRequestDTO.getAge());
-        user.setEmail(userRequestDTO.getEmail());
-        user.setLogin(userRequestDTO.getLogin());
-        List<Role> roles = userRequestDTO.getRoles()
+        userMapper.updateUserController(dto, user);
+        List<Role> roles = dto.getRoles()
                 .stream()
                 .map(roleId -> roleRepository.findById(roleId)
                         .orElseThrow(() ->
@@ -105,7 +87,7 @@ public class AdminRestController {
         user.getRoles().clear();
         user.getRoles().addAll(roles);
         userService.update(user);
-        return ResponseEntity.ok(mapToDto(user));
+        return ResponseEntity.ok(userMapper.toResponseDTO(user));
     }
 }
 
